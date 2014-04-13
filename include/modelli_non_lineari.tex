@@ -1,0 +1,153 @@
+\section{Algoritmi di classificazione non lineari}
+\subsection{Reti neurali artificiali}
+Vedi AIMA, Volume 2, paragrafo 20.5.
+
+\subsection{Support Vector Machine}
+Lo scopo di questi modelli è la classificazione binaria. Analizzeremo inizialmente il caso in cui i dati da classificare siano linearmente separabili, in seguito estenderemo il discorso a dati non linearmente separabili\footnote{Qualcosa su questo argomento si trova in AIMA, Volume 2, paragrafo 20.6. Per gli amanti del brivido, \href{http://www.disp.uniroma2.it/users/piccialli/svm_sciandrone.pdf}{questa} dispensa sembra decisamente più completa.}.
+
+\subsubsection{Dati linearmente separabili}
+Il modello che costruiamo è ancora una volta un iperpiano (come la regressione lineare ed il \emph{perceptron}), ma cambierà il modo in cui lo addestreremo, ovvero cambierà lo scopo dell'addestramento. L'espressione dell'ipotesi è quindi:
+\begin{equation*}
+h(\mathbf{x}) = \mathbf{w}^T \mathbf{x} + b.
+\end{equation*}
+Porre $h(\mathbf{x})=0$ ci consente di definire l'equazione dell'iperpiano separatore:
+\begin{equation*}
+\mathbf{w}^T \mathbf{x} + b = 0.
+\end{equation*}
+A questo punto, tutti i punti che si trovano al di sopra dell'iperpiano verrano classificati come $y=+1$, quelli al di sotto del piano come $y=-1$. Fare ciò è equivalente a porre l'uscita della funzione ipotesi in ingresso alla funzione segno, ovvero:
+\begin{equation*}
+y(\mathbf{x}^{(i)}) = \sign(h(\mathbf{x}^{(i)})) = \sign(\mathbf{w}^T \mathbf{x}^{(i)} + b).
+\end{equation*}
+Possiamo esplicitare l'espressione precedente come segue:
+\begin{gather*}
+\mathbf{w}^T \mathbf{x}^{(i)} + b > 0 \quad \rightarrow \quad y^{(i)} = +1 \\
+\mathbf{w}^T \mathbf{x}^{(i)} + b < 0 \quad \rightarrow \quad y^{(i)} = -1 
+\end{gather*}
+
+A questo punto vediamo come determinare il vettore dei parametri $\mathbf{w}$ e $b$, cioè come determinare l'iperpiano separatore. Lo scopo della procedura di ottimizzazione che vogliamo costruire è massimizzare il \emph{margine}. Il margine si ottiene sommando un contributo $d^+$ ed un contributo $d^-$. $d^+$ rappresenta la minima distanza tra un punto di classe $+1$ e l'iperpiano separatore. $d^-$ èil corrispettivo per la classe $-1$, cioè la distanza minore tra un punto di classe $-1$ e l'iperpiano. I punti che danno origine a tale distanza, cioè i più vicini all'iperpiano, costituiscono i due \emph{vettori di supporto}.
+
+Prima di formalizzare il problema di ottimizzazione, imponiamo due vincoli che ci torneranno utili in seguito: per tutti i punti appartenenti ai vettori di supporto l'ipotesi deve valere esattamente $+1$ o $-1$ (a seconda che il punto appartenga al vettore di supporto positivo o negativo):
+\begin{gather*}
+\mathbf{w}^T \mathbf{x}^{(i)} + b = +1 \quad \text{se }  \mathbf{x}^{(i)} \in s.v.^+\\
+\mathbf{w}^T \mathbf{x}^{(i)} + b = -1 \quad \text{se }  \mathbf{x}^{(i)} \in s.v.^-
+\end{gather*}
+
+A questo punto possiamo sintetizzare i 4 vincoli imposti nell'unica espressione:
+\begin{equation*}
+y^{(i)}\left(\mathbf{w}^T \mathbf{x}^{(i)} + b\right) -1 \geq 0
+\end{equation*}
+vediamo perché questa ha senso:
+\begin{itemize}
+\item se  $\mathbf{x}^{(i)}$ è di classe $+1$, risulta $y^{(i)}=+1$ e quindi il vincolo precedente impone che $\mathbf{w}^T \mathbf{x}^{(i)} + b \geq +1$;
+\item se  $\mathbf{x}^{(i)}$ è di classe $-1$, risulta $y^{(i)}=-1$ e quindi il vincolo precedente impone che $\mathbf{w}^T \mathbf{x}^{(i)} + b \leq -1$.
+\end{itemize}
+Torniamo al problema di massimizzazione: è noto\footnote{\href{http://mathworld.wolfram.com/Point-PlaneDistance.html}{Point-Plane Distance}}  che la distanza tra un generico $\mathbf{x}^{(i)}$ ed un iperpiano è pari a\footnote{Nelle slide del corso il numeratore è $|(\mathbf{w}^T \mathbf{x}^{(i)} + b) \cdot  y^{(i)}|$. Probabilmente questo è errato e l'introduzione di $y^{(i)}$ serve ad eliminare il valore assoluto. Infatti, per come abbiamo impostato il problema, risulta che $|(\mathbf{w}^T \mathbf{x}^{(i)} + b)| = (\mathbf{w}^T \mathbf{x}^{(i)} + b) \cdot  y^{(i)}$ (cioè $|x| = x \cdot \sign(x)$).}:
+\begin{equation*}
+\frac{ |(\mathbf{w}^T \mathbf{x}^{(i)} + b)|} {||\mathbf{w}||}
+\end{equation*}
+dove ricordiamo che:
+\begin{itemize}
+\item $||\mathbf{w}|| = \sqrt{\sum_{i=0}^n{w_i^2}}$
+\end{itemize}
+In base alle condizioni imposte, i punti dei vettori di supporto rendono unitario il numeratore della precedente, per cui il margine ($d^+ + d^-$) è proprio $\frac{2}{||\mathbf{w}||}$.
+
+Il problema desiderato è quindi il seguente: vogliamo trovare $\mathbf{w}$ e $b$ che massimizzino $\frac{2}{||\mathbf{w}||}$ sotto i seguenti vincoli:
+\begin{equation*}
+y^{(i)}\left(\mathbf{w}^T \mathbf{x}^{(i)} + b\right) -1 \geq 0 \qquad i=1, \dots, m.
+\end{equation*}
+Si vede che:
+\begin{equation*}
+\argmax_{\mathbf{w},b}{\frac{2}{||\mathbf{w}||}} = \argmin_{\mathbf{w},b}{\frac{||\mathbf{w}||^2}{2}}.
+\end{equation*}
+Ciò ci consente di passare da una massimizzazione ad un problema di minimizzazione convesso e con vincoli di disuguaglianza lineari. In realtà a partire da quest'ultima formulazione (detta \emph{primale}) si genera il problema \emph{duale} (facendo utilizzo della funzione di Lagrange) che è di più semplice risoluzione. La funzione obiettivo diventa quindi:
+\begin{equation*}
+L(\mathbf{w}, b, \boldsymbol\alpha) = \frac{1}{2} ||\mathbf{w}||^2 - \sum_{i=1}^m \alpha_i ( y^{(i)} (\mathbf{w}^T \mathbf{x}^{(i)} + b)-1 ).
+\end{equation*}
+
+
+ Tramite una serie di passaggi ed osservazioni è possibile riformulare il problema come segue\footnote{C'è una differenza tra il libro e le slide, qui ho riportato la versione del libro di pag. 440 del secondo volume (paragrafo 20.6).
+ 
+ Inoltre credo che per $\mathbf{x^{(i)}}\cdot\mathbf{ x^{(j)}}$ gli autori intendano il prodotto scalare tra due vettori di ingressi. Se così fosse, per correttezza formale,  il primo dovrebbe essere trasposto.}:
+\begin{gather*}
+\max_{\boldsymbol\alpha} \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j (\mathbf{x^{(i)}}\cdot\mathbf{ x^{(j)}} )\\
+s.t. \qquad \alpha_i \geq 0 \quad i=1,\dots,m \\
+\sum_{i=1}^m \alpha_i y^{(i)} = 0
+\end{gather*}
+dove $\alpha_i$ sono i coefficienti di Lagrange introdotti dall'omonima funzione ed a partire dai loro valori ottimi è possibile ricavare $\mathbf{w}^*$ e $b^*$. Si vede che $\alpha_i$ è non nullo per tutti e soli i punti appartenenti ai vettori di supporto.
+
+Una volta individuati il vettore di coefficienti ottimi $\boldsymbol\alpha^*$ è possibile passare alla soluzione del problema primario tramite due relazioni:
+\begin{itemize} 
+\item la prima consente di trovare i coefficienti ottimi dell'iperpiano ($\mathbf{w}^*$)
+\begin{equation}\label{eq:w_ottimo}
+w^* = \sum_{i=1}^m \alpha_i^* y^{(i)} x^{(i)};
+\end{equation}
+\item il secondo \emph{set} di equazioni consente di trovare il valore ottimo dell'intercetta ($b^*$)
+\begin{equation*}
+\alpha_i^* -  ( y^{(i)} (\mathbf{w}^{*T} \mathbf{x}^{(i)} + b^*)-1 )=0 \quad i=1,\dots,m
+\end{equation*}
+\end{itemize}
+In particolare, soluzione trovata gode di alcune proprietà:
+\begin{itemize}
+\item $\alpha_i^*=0$ per tutti i punti che non giacciono sui margini;
+\item $\alpha_i^*\neq0$ per tutti i punti che giacciono sui margini, cioè per quei punti facenti parte dei vettori di supporto.
+\end{itemize}
+Date le due precedenti conclusioni e l'\autoref{eq:w_ottimo}, notiamo che \emph{la soluzione ottima è una combinazione lineare dei soli vettori di supporto}. Quindi, l'equazione del piano separatore ottimo è:
+\begin{equation*}
+\mathbf{w}^{*T} \mathbf{x} + b^* = \sum_{i \in \{s.v.^+~\cup~s.v.^-\}} \alpha_i^* y^{(i)}(\mathbf{x}^{(i)T} \cdot \mathbf{x}) + b^*
+\end{equation*}
+
+\subsubsection{Soft margin SVM}
+Esaminiamo ora come usare una SVM nel caso in cui i dati \emph{non} siano linearmente separabili. Notiamo che nella formulazione originale del problema ciascun vincolo
+\begin{equation*}
+y^{(i)}\left(\mathbf{w}^T \mathbf{x}^{(i)} + b\right) -1 \geq 0 \qquad i=1, \dots, m
+\end{equation*}
+impone che il punto \emph{i-esimo} non oltrepassi il semispazio delimitato dall'iperpiano in cui risiedono tutti i campioni della sua stessa classe. In altre parole, se un generico $\mathbf{x}^{(i)}$ è di classe $y$ il problema di ottimizzazione ammette soluzione solo se esiste una soluzione in cui tutti i punti si trovano nel semipiano ``corretto''. In caso di \emph{outlier} questa procedura non può funzionare. Ecco dunque che per contemplare la possibilità di ``far commettere errori'' alla procedura di ottimizzazione introduciamo per ciascun vincolo una variabile \emph{slack} $\xi_i \geq 0$. Il valore di ogni $\xi_i$ è proporzionale a quanto $\mathbf{x}^{(i)}$ sta ``sforando'' nel semipiano errato, cioè a quanto il punto anomalo si discosta dall'iperpiano e se è maggiore di $1$ indica una misclassificazione. I vincoli diventano quindi:
+\begin{equation*}
+y^{(i)}\left(\mathbf{w}^T \mathbf{x}^{(i)} + b\right) -1 + \xi_i \geq 0 \qquad i=1, \dots, m.
+\end{equation*}
+Ovviamente è necessario penalizzare i punti misclassificati, introducendo un fattore additivo nella funzione costo:
+\begin{equation*}
+\min_w \frac{1}{2} ||\mathbf{w}||^2 + C \sum_{i=1}^m \xi_i
+\end{equation*}
+dove $C$ rappresenta un parametro di \emph{regolarizzazione} il cui valore può essere determinato tramite \emph{cross validation}. Infatti una $C$ troppo grande rischia di produrre un addestramento troppo ``severo'' e non trovare una soluzione, il contrario produce un addestramento troppo tollerante e dunque un modello che genera troppi errori di classificazione. Il problema duale, quello effettivamente risolto, diventa:
+\begin{gather*}
+\max_\alpha \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j (\mathbf{x^{(i)}}\cdot\mathbf{ x^{(j)}} )\\
+s.t. \qquad 0 \leq \alpha_i \leq C \quad i=1,\dots,m \\
+\sum_{i=1}^m \alpha_i y^{(i)} = 0.
+\end{gather*}
+
+\subsubsection{Metodi kernel}
+Quanto appena visto non risolve tutti i problemi, infatti affinché il metodo funzioni è necessario che i punti siano distributi in regioni di spazio ``quasi'' linearmente separabili, cioè ammettiamo la presenza di \emph{outlier} ma non di non-linearità. L'idea alla base dei metodi \emph{kernel} è simile a quella delle funzioni di base ($\phi$), le quali applicano una funzione a ciascuna istanza di ingresso che ne aumenta il numero di \emph{feature} e renda linearmente separabili i campioni in uno spazio degli \emph{input} a dimensionalità superiore. 
+
+Il problema in tutto ciò sorge quando le non-linearità sono molto forti e quando i vettori delle \emph{feature} sono molto grandi già prima dell'applicazione delle funzioni di base. Nell'espressione da ottimizzare compare infatti il prodotto $\mathbf{x}^{(i)} \mathbf{x}^{(j)}$:
+\begin{equation*}
+\max_\alpha \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j (\mathbf{x}^{(i)} \mathbf{x}^{(j)}).
+\end{equation*}
+Dopo aver applicato le funzioni base, questo prodotto viene sostituito da $\phi(\mathbf{x}^{(i)})^T\phi(\mathbf{x}^{(j)})$ e questo calcolo può diventare oneroso nelle condizioni sopra descritte. Lo scopo di una funzione kernel $k(\mathbf{x}^{(i)}, \mathbf{x}^{(j)})$\footnote{Vedi le slide per alcuni esempi di funzioni kernel. 
+
+Per rappresentare gli ingressi sto continuando ad usare la notazione introdotta fin dall'inizio, pur essendo leggermente diversa da quella delle slide e del libro.} è quello di restituire lo stesso risultato del precedente prodotto tra vettori, senza però richiedere una trasformazione esplicita degli ingressi, cioè:
+\begin{equation*}
+k(\mathbf{x}^{(i)}, \mathbf{x}^{(j)}) = \phi(\mathbf{x}^{(i)})^T\phi(\mathbf{x}^{(j)}).
+\end{equation*}
+Applicando una funzione simile, il problema di ottimizzazione diventa:
+\begin{gather*}
+\max_\alpha \sum_{i=1}^m \alpha_i - \frac{1}{2} \sum_{i,j=1}^m y^{(i)} y^{(j)} \alpha_i \alpha_j k(\mathbf{x}^{(i)},\mathbf{x}^{(j)}). \\
+s.t. \qquad 0 \leq \alpha_i \leq C \quad i=1,\dots,m \\
+\sum_{i=1}^m \alpha_i y^{(i)}= 0.
+\end{gather*}
+A questo punto la procedura di ottimizzazione richiede la scelta di:
+\begin{itemize}
+\item tipo di Kernel da usare;
+\item parametri del Kernel scelto;
+\item valore di C;
+\end{itemize}
+questi possono essere tutti determinati euristicamente tramite \emph{cross-validation}. Il vantaggio di pochi parametri da calibrare si aggiunge ai vantaggi delle SVM, cioè:
+\begin{itemize}
+\item la funzione da minimizzare è quadratica, e non c'è il pericolo di incappare in minimi locali;
+\item la soluzione  può essere trovata in tempo polinomiale tramite le note tecniche di ottimizzazione;
+\item le soluzioni sono stabili, cioè non dipendono da inizializzazioni casuali, come nel caso delle reti neurali;
+\item la soluzione è sparsa, in quanto dipende solo dai vettori di supporto.
+\end{itemize}
+
+\subsection{K-nearest neighbors}
+Vedi AIMA, Volume 2, paragrafo 20.4.

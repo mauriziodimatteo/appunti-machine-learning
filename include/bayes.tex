@@ -1,0 +1,141 @@
+\section{Apprendimento statistico}
+In questa parte analizzeremo un esempio di classificatore basato su apprendimento statistico: il classificatore \emph{bayesiano naive}. Esso  consente di predirre la classe di appartenenza di un campione sfruttando le regole della statistica, in particolar modo il suo funzionamento è incentrato sulla regola di \emph{Bayes}\footnote{AIMA, Volume 2, paragrafi 20.1 e 20.2 (il capitolo 13 è propedeutico).}.
+
+\subsection{Regola di Bayes}
+Dati due eventi $A$ e $B$, la regola di Bayes ci consente di calcolare la cosidetta ``probabilità a posteriori'', cioè la probabilità che dato l'evento $B$ si verifichi anche $A$. Essa è:
+\begin{equation*}
+p(A|B) = \frac{p(A,B)}{P(B)}.
+\end{equation*}
+Per la regola del prodotto possiamo scrivere:
+\begin{equation*}
+p(A,B) = p(A|B) \cdot p(B),
+\end{equation*}
+per simmetria
+\begin{equation*}
+p(A,B) = p(B,A) = p(B|A) \cdot p(A).
+\end{equation*}
+Sostituendo l'ultima nella prima equazione, otteniamo la forma più usata della regola di Bayes:
+\begin{equation*}
+p(A|B) = \frac{p(B|A) \cdot p(A)}{p(B)}.
+\end{equation*}
+
+Noi useremo questo risultato mettendo in relazione ingressi ed uscite di un classificatore, come segue:
+\begin{equation*}
+p(y|x) = \frac{p(x|y) \cdot p(y)}{p(x)}
+\end{equation*}
+dove:
+\begin{itemize}
+\item $p(y|x)$ prende il nome di ``stima a posteriori'', ed infatti rappresenta la probabilità che si presenti un'uscita $y$ avendo osservato un ingresso $x$;
+\item $p(x|y)$ si chiama ``verosimiglianza'' ed è la probabilità che venga generato un ingresso $x$ sapendo che la classe d'appartenenza è $y$ (vedi esempio successivo);
+\item $p(y)$ è la probabilità marginale derivante dalla conoscenza del fenomeno (vedi esempio);
+\item $p(x)$ è l'``evidenza'', cioè la probabilità marginale di $x$.
+\end{itemize}
+
+Chiariamo i concetti con un esempio. Ipotizziamo che un produttore di caramelle commercializzi 5 tipi di confezioni così assortite\footnote{Questo esempio è tratto dal libro (paragrafo 20.1).}:
+\begin{itemize}
+\item $y_1$: 100\% caramelle alla ciliegia;
+\item $y_2$: 75\% ciliegia + 25\% lime;
+\item $y_3$: 50\% + 50\%
+\item $y_4$: 25\% + 75\%
+\item $y_5$: 100\% lime.
+\end{itemize}
+Esteticamente, però, i sacchetti sono tutti uguali e non abbiamo modo di conoscere di che tipo è il nostro sacchetto. Ciò che vogliamo fare, ed è ciò a cui ambisce un classificatore bayesiano, è stimare con quale probabilità il nostro sacchetto è di uno dei 5 tipi man mano che scartiamo caramelle prelevate da esso. Così facendo possiamo ipotizzare di che tipo è il sacchetto ed in base a ciò ipotizzare il gusto della prossima caramella estratta. Per questo motivo annoveriamo i classificatori bayesiani tra i modelli ``generativi''. Inizialmente, dunque, vogliamo rispondere alla domanda: se estraggo $M$ caramelle dal sacchetto, quante probabilità ci sono che il sacchetto sia di tipo $y_j$ (j=1,\dots,5)?
+In formule:
+\begin{equation*}
+p(y_j|\mathbf{x_M}) = \frac{p(\mathbf{x_M}|y_j) \cdot p(y_j)}{p(\mathbf{x_M})}
+\end{equation*}
+dove:
+\begin{itemize}
+\item $p(y_j|\mathbf{x_M})$ rappresenta la probabilità che desideriamo conoscere;
+\item $p(\mathbf{x_M}|y_j)$ rappresenta la probabilità che la sequenza di caramelle $\mathbf{x_M}$ (che possiamo interpretare come un vettore) sia estratta da un sacchetto di tipo $y_j$. Ad esempio la probabilità di estrarre \emph{una} caramella alla ciliegia da un sacchetto di tipo $y_1$ è unitaria;
+\item $p(y_j)$ rappresenta la probabilità marginale che un sacchetto sia di tipo $y_j$. Ad esempio il fornitore potrebbe dirci d'aver prodotto il 10\% di sacchetti $y_1$, il 20\% $y_2$ e così via, per cui $p(y_1)=0.1$, $p(y_2)=0.2$, ecc.;
+\item $p(\mathbf{x_M})$ rappresenta la probabilità marginale di pescare una sequenza $\mathbf{x_M}$ senza sapere nulla sul tipo di sacchetto. Ad esempio potremmo prendere in considerazione tutti i sacchetti venduti e misurare la probabilità media con cui ciascuna possibile sequenza di $M$ caramelle viene estratta da un sacchetto. Tali sacchetti saranno assortiti nella maniera più varia, ma ai fini della probabilità marginale ciò non importa.
+\end{itemize}
+
+Tramite l'applicazione della regola di Bayes possiamo calcolare la probabilità che il sacchetto sia di ciascuna categoria man mano che estraiamo nuove caramelle. Ogni volta che estraiamo una nuova caramella abbiamo una nuova informazione a disposizione (è come se aggiungessimo un nuovo elemento ad $\mathbf{x_M}$) ed in base a questa nuova informazione possiamo aggiornare tutte le probabilità a posteriori, che presumibilmente diventeranno più accurate nel predirre la classe di appartenenza. Quando avremo estratto tutte le caramelle desiderate, affermeremo che la classe a cui appartiene il nostro sacchetto è quella la cui probabilità a posteriori è maggiore.
+
+\subsection{Classificatore bayesano naive}
+Supponiamo ora di lavorare con campioni costituiti da $n$ ingressi discreti ed appartenenti a $k$ possibili classi. Lo scopo del nostro simpatico classificatore è osservare ciascun campione in ingresso e determinare qual è la classe di appartenenza più probabile\footnote{Si noti che è proprio ciò che facevamo cercando di ``indovinare'' il tipo di pacchetto di caramelle in nostro possesso.}:
+\begin{equation*}
+y_{MAP} = \argmax_{j = 1, \dots, k} \left( p(y_j|x_1,x_2,\dots,x_n) \right).
+\end{equation*}
+Questa operazione si chiama ``stima MAP'' (\emph{Maximum A Posteriori probability}) poiché ogni volta che osserviamo un campione stimiamo qual è la sua classe di appartenenza più probabile (ad esempio, ogni volta che scartiamo un'ulteriore caramella dallo stesso sacchetto cerchiamo di capire di che tipo è il sacchetto). Il fatto che sia una stima \emph{a posteriori} significa che prediciamo la classe di appartenenza del campione \emph{dopo} averlo osservato.
+
+Applichiamo la regola di Bayes e ci accorgiamo di un'interessante conseguenza:
+\begin{dmath*}
+y_{MAP} = \argmax_{j = 1, \dots, k} \left( p(y_j|x_1,x_2,\dots,x_n) \right)
+= \argmax_{j} \left( \frac{p(x_1,x_2,\dots,x_n | y_j)\cdot p(y_j)}{p(x_1,x_2,\dots,x_n)} \right)
+= \argmax_{j} \left( p(x_1,x_2,\dots,x_n | y_j)\cdot p(y_j) \right).
+\end{dmath*}
+
+Poiché al variare di $y_j$, ${p(x_1,x_2,\dots,x_n)}$ resta immutato, esso rappresenta un fattore di normalizzazione non influente ai fini della massimizzazione. Eliminandolo semplifichiamo il problema.
+
+Studiamo ora la cardinalità del fattore $ p(x_1,x_2,\dots,x_n | y_j)$. Nel caso più semplice ciascun attributo è binario e lo spazio  degli ingressi è costituito da  $2^n$ valori distinti. Per ciascun valore di $y_j$ dobbiamo quindi conoscere $2^n-1$ probabilità\footnote{la $2^n-esima$ può essere calcoalta come il complemento ad 1 della somma delle restanti.}, per un totale di $k(2^n-1)$ calcoli di probabilità necessari. Con problemi di grandi dimensioni questo potrebbe essere un limite, ecco dunque che con il classificatore \emph{naive} introduciamo una notevole semplificazione: ipotizzamo che, fissata una classe, tutte le variabili dipendano solo da essa e non abbiano dipendenza reciproche (``indipendenza condizionata''\footnote{AIMA, Volume 2, paragrafo 13.1 e successivi.}). In base a ciò riduciamo il problema al calcolo di sole $kn$ probabilità e quindi:
+\begin{equation}\label{eqymap}
+y_{MAP} = \argmax_{j} \left(  p(y_j) \prod_{i=1}^n p(x_i| y_j)\right).
+\end{equation}
+
+In ultimo evidenziamo che, in genere, si passa alla massimizzazione della forma logaritmica della precedente equazione poiché è numericamente più stabile:
+\begin{equation}\label{eqlog_ymap}
+y_{MAP} = \argmax_{j} \left(  \log p(y_j)  +\sum_{i=1}^n \log p(x_i| y_j)\right).
+\end{equation}
+
+\subsubsection{Classificatore di testi basato su naive bayes}
+Analizziamo ora una semplice applicazione di un modello \emph{naive bayes} per la classificazione di testi. Il \emph{training set} a nostra dispozione è costituito da una serie di documenti per ciascuno dei quali è specificata la classe di appartenenza. Ad esempio questi documenti potrebbero essere pagine web di siti universitari e far riferimento ad un docente, ad un corso, ad un progetto o ad una facoltà. Vogliamo addestrare il classificatore in modo tale che, quando osserva una nuova pagina, ci sappia dire qual è la classe di appartenenza più probabile.
+
+\paragraph{Pre-processing}
+La prima operazione da fare consiste nell'eliminazione di articoli, preposizioni, ecc. dai testi. Infatti queste sono parole ricorrenti in qualsiasi lingua ed in quanto tali non apportano informazione utile ai fini della classificazione.
+
+Inoltre notiamo che, ai fini della classificazione, parole come ``studiare'', ``studiai'', ``studiò'' sono equivalenti  perché fanno riferimento tutte al verbo ``studiare''. Per fare in modo che il classificatore le tratti alla stessa maniera, si effettua l'operazione di \emph{stemming}, cioè di riduzione di ciascuna parola alla sua radice. In seguito allo \emph{stemming} ciascuna delle tre parole precedenti viene \emph{trasformata} in ``stud''.
+
+\paragraph{Modellazione del problema}
+Dopo aver preprocessato i testi occorre capire cosa utilizzare come ingressi e quali sono le uscite. La determinazione delle uscite è piuttosto immediata, infatti il nostro scopo è classificare ciascun documento e quindi ciascun possibile valore d'uscita dovrà essere associato una classe di appartenenza (con riferimento all'esempio delle pagine web queste potrebbero essere  $y=1$ per \emph{docente}, $y=2$ per \emph{corso}, $y=3$ per \emph{progetto} e così via). Per quanto riguarda gli ingressi, possiamo pensare di avere tante \emph{feature} quante sono le parole distinte presenti in tutti i testi del \emph{training set}. Associamo ciascuna parola ad un elemento di un vettore. L'elemento \emph{i-esimo} di un vettore in ingresso sarà pari al numero di volte che la parola ad esso  associata è ripetuta nel documento a cui il vettore fa riferimento. La versione più semplice del classificatore ignora il numero di ripetizioni, e prevede che un elemento del vettore sia $1$ quando la parola è presente almeno una volta nel testo e $0$ in caso contrario.
+
+
+\begin{esempio}
+Ipotizziamo di avere 2 documenti, ciascuno dei quali è costituito da una sola frase:
+\begin{enumerate}
+\item ``Il gatto è sopra il tavolo'';
+\item ``Il cane è sotto il tavolo''.
+\end{enumerate}
+Dopo il \emph{preprocessing} queste diventeranno:
+\begin{enumerate}
+\item ``gatto sopra tavolo'';
+\item ``cane sotto tavolo''.
+\end{enumerate}
+In esse sono presenti 5 parole distinte, per cui un generico ingresso sarà costituito da un vettore di 5 elementi, che corrispondono alle parole:
+\begin{equation*}
+\langle gatto, cane, sopra, sotto, tavolo \rangle.
+\end{equation*}
+In base a ciò i due ingressi vengono rappresentati come:
+\begin{enumerate}
+\item $x^{(1)} = <1,0,1,0,1>$;
+\item $x^{(2)} = <0,1,0,1,1>$;
+\end{enumerate}
+\end{esempio}
+
+Notiamo che adottando un modello naive stiamo ipotizzando che la presenza di ciascuna parola sia condizionalmente indipendente dalle altre. Questa ipotesi intuitivamente sembra non vera, infatti se è presente la parola ``automobile'' è ragionevole credere che la presenza della parola ``guidare'' non sia completamente scorrelata. In realtà si vede che questa ipotesi semplificativa porta a classificatori che funzionano piuttosto bene.
+
+
+\paragraph{Stima delle probabilità}
+L'ultima informazione necessaria per applicare la regola di Bayes per determinare la stima MAP sono le probabilità a priori, cioè le varie  $p(y_j)$, e le probabilità condizionate semplici $p(x_i | y_j)$. Quando il campione di dati a disposizione è piuttosto ampio, possiamo adottare un approccio frequentista per individuare una stima di tali probabilità. In particolare,  per ciascuna classe, è sufficiente calcolare il rapporto tra il numero di documenti di tale classe ed il numero totale di documenti:
+\begin{dmath*}
+\hat{p}(y_j) = \frac{\text{n.ro documenti }y_j}{\text{n.ro totale documenti}}.
+\end{dmath*}
+In maniera simile potremmo stimare le probabilità condizionate:
+\begin{equation*}
+p(x_i | y_j) = \frac{p(x_i,y_j) }{p(y_j)} 
+\end{equation*}
+ovvero:
+\begin{equation*}
+\hat{p}(x_i | y_j) = \frac{\text{n.ro documenti }(x_i \cap y_j)} {\text{n.ro documenti } y_j}
+\end{equation*}
+in cui il numeratore rappresenta il numero di documenti di classe $y_j$ in cui compare il termine $x_i$.
+Ma cosa accadrebbe se per una particolare coppia classe-ingresso non ci fosse alcun campione d'esempio tra i documenti considerati? Avremmo $p(x_i | y_j ) = 0$, e quindi l'\autoref{eqymap} si annullerebbe mentre l'\autoref{eqlog_ymap} andrebbe a $-\infty$.
+
+\subparagraph{Laplace smoothing}
+Questa tecnica modifica leggermente le formule per il calcolo delle probabilità condizionate e consente di risolvere il problema appena descritto. La formula proposta consiste nella seguente espressione:
+\begin{equation*}
+\hat{p}(x_i | y_j) = \frac{\text{n.ro documenti }(x_i \cap y_j) +1 } {\text{n.ro documenti } y_j + |x|}.
+\end{equation*}
+Così facendo, gli attributi non rappresentati in alcun documento saranno equiprobabili con probabilità $1/(\mbox{n.ro documenti } y_j+|x|)$ dove $|x|$ è il numero totale di tutti i possibili valori delle $x$.

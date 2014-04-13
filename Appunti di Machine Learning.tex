@@ -1,0 +1,93 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{breqn}
+\usepackage{amsthm}
+\usepackage[small]{caption}
+
+\usepackage{ifpdf}
+\setcounter{tocdepth}{5}
+\usepackage{nameref}
+\usepackage{subcaption}
+\usepackage[backend = bibtex]{biblatex}
+\bibliography{include/bibliografia}
+
+
+\ifpdf 
+    \usepackage[pdftex]{graphicx}   % to include graphics
+    \pdfcompresslevel=9 
+    \usepackage[pdftex,     % sets up hyperref to use pdftex driver
+            plainpages=false,   % allows page i and 1 to exist in the same document
+            breaklinks=true,    % link texts can be broken at the end of line
+            colorlinks=true,
+            linkcolor=blue,
+            pdftitle=Appunti di Machine Learning
+            pdfauthor=Maurizio Dimatteo
+           ]{hyperref} 
+    \usepackage{thumbpdf}
+\else 
+    \usepackage{graphicx}       % to include graphics
+    \usepackage[hypertexnames=false]{hyperref}       % to simplify the use of \href
+\fi 
+
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{listings}
+
+\DeclareMathOperator*{\argmin}{arg\!\min}
+\DeclareMathOperator*{\argmax}{arg\!\max}
+\DeclareMathOperator*{\cov}{Cov}
+\DeclareMathOperator*{\sign}{sign}
+
+\theoremstyle{definition}
+\newtheorem*{esempio}{Esempio}
+
+
+\title{Appunti di Machine Learning}
+\author{Maurizio Dimatteo \\ \href{mailto:dimatteomaurizio@gmail.com}{\small dimatteomaurizio@gmail.com}}
+\date{\today}
+
+\begin{document}
+
+\lstset{ 
+  language=R,                     % the language of the code
+  basicstyle=\scriptsize\ttfamily, % the size of the fonts that are used for the code
+  %numbers=left,                   % where to put the line-numbers
+  %numberstyle=\tiny\color{Blue},  % the style that is used for the line-numbers
+  %stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+                                  % will be numbered
+  %numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+    keywordstyle=\color{RoyalBlue},      % keyword style
+  commentstyle=\color{YellowGreen},   % comment style
+  stringstyle=\color{ForestGreen}      % string literal style
+} 
+
+\maketitle
+\begingroup
+\hypersetup{linkcolor=black}
+\tableofcontents
+\endgroup
+
+\include{include/premessa}
+\include{include/introduzione}
+\include{include/modelli_lineari}
+\include{include/progettazione_ml}
+\include{include/modelli_non_lineari}
+\include{include/bayes}
+\include{include/algoritmi_non_supervisionati}
+\nocite{*}
+
+\addcontentsline{toc}{section}{Riferimenti bibliografici}
+\printbibliography
+\end{document}  

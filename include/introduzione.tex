@@ -1,0 +1,67 @@
+\section{Introduzione}
+
+\subsection{Ragionamento deduttivo e induttivo}
+\
+Si dice \emph{ragionamento deduttivo} il processo per cui, partendo dalla conoscenza generale del fenomeno, si arriva a conclusioni specifiche. Con riferimento ad una \emph{blackbox} è come conoscere la funzione di trasferimento ed applicarla agli ingressi per ricavarne le uscite.
+
+Il \emph{ragionamento induttivo}, invece, si basa sull'osservazione di esempi specifici per ricavare una regola generale che giustifichi gli esempi visti. È equivalente ad osservare ingressi ed uscite di una \emph{blackbox} ed individuare la migliore approssimazione della funziona di trasferimento.
+
+\paragraph{Esempio}
+\begin{itemize}
+  \item  Ragionamento deduttivo:
+    \begin{itemize}
+      \item assioma generale: tutti i cani hanno quattro zampe, una coda ed abbaiano;
+    \item conclusione specifica: questo che ho davanti è un cane (perché ha quattro zampe, una coda ed abbaia).
+    \end{itemize}
+  \item  Ragionamento induttivo:
+  \begin{itemize}
+  \item esempio specifico: questi animali hanno quattro zampe, una coda ed abbaiano;  \item descrizione generale: deve esistere una categoria di animali con queste caratteristiche (chiamati ``cani'').
+  \end{itemize}
+\end{itemize}
+
+\subsection{Apprendimento supervisionato e non supervisionato}
+
+\subsubsection{Supervisionato}
+Dato un \emph{traininig set} in cui ciascuna istanza è costituita da un vettore di \emph{feature} ($\mathbf{x}$) ed il corrispondente \emph{output} ($y$), l'apprendimento supervisionato consiste nell'individuare la migliore funzione  $h(x)$ (detta ``ipotesi'') che approssima la funzione \emph{target} $f(x)$ (sconosciuta) tale che $y = f(x) \cong h(x)$ anche per valori esterni al \emph{training set}.
+
+Si possono individuare due categorie di algoritmi supervisionati:
+\begin{itemize}
+\item algoritmi di regressione;
+\item algoritmi di classificazione.
+\end{itemize}
+
+
+\paragraph{Algoritmi di regressione} Forniscono un \emph{output} numerico e tentano di approssimare una funzione non nota. Ad esempio potremmo istruire una macchina per emulare il comportamento di una funzione matematica $f(x)$. L'\emph{output} $y=h(x)$ sarà numerico e rappresenterà una stima di $f(x)$.
+
+\paragraph{Algoritmi di classificazione} Forniscono un \emph{output} qualitativo, specificano cioè la classe di appartenenza di ciascun campione in ingresso. Ad esempio un classificatore binario potrebbe essere addestrato con dati relativi ad altezza e peso di un certo numero di uomini e di donne. In fase di predizione, ricevuti in ingresso altezza e peso di una persona, l'uscita del classificatore sarà 1 o 0 a seconda che altezza e peso siano più consoni ad una donna o ad un uomo.
+
+\subsubsection{Non supervisionato}
+In questa categoria di algoritmi non abbiamo a disposizione le uscite corrispondenti a ciascun vettore di \emph{feature}. Lo scopo della macchina è estrapolare delle informazioni significative dagli ingressi. A tal proposito si possono perseguire i seguenti due scopi principali.
+
+\paragraph{Clusterizzazione}
+Consiste nell'individuare gruppi di vettori di \emph{input} con caratteristiche comuni. Ad esempio fornendo altezza e peso di 100 persone, tramite un algoritmo di clusterizzazione potremmo individuare una suddivisione dell'insieme dei campioni in due \emph{cluster}: adulti e bambini, oppure uomini e donne. A priori, però, non conosciamo per ciascun vettore di \emph{feature} la corrispondente classe di appartenenza.
+
+\paragraph{Dimensionality reduction}
+Consiste nell'individuare quali \emph{feature} sono poco rilevanti ai fini della classificazione in modo tale da poterle trascurare e ridurre le dimensioni del problema.
+
+\subsection{Scelta della migliore ipotesi}
+
+Essa idealmente dovrebbe:
+\begin{itemize}
+  \item minimizzare l'errore commesso sul \emph{training set};
+  \item essere capace di generalizzare l'andamento del fenomeno, ovvero predire correttamente anche \emph{output} non noti relativi ad ingressi mai visti durante l'addestramento.
+  \end{itemize}
+I due obiettivi sono spesso incompatibili, per cui occorre trovare il giusto compromesso ed evitare \emph{underfitting} ed \emph{overfitting} (\autoref{sec:overunderfitting}).
+
+\subsubsection{Rasoio di Occam}
+Quella del Rasoio di Occam è una regola di massima che ci suggerisce come scegliere l'ipotesi più opportuna. Preso un insieme di ipotesi di grado massimo $k$, assumendo che rappresentino tutte adeguatamente il modello, il principio del Rasoio di Occam (che ha origini lontane dall'AI e dalla scienza) ci suggerisce di optare per quella più semplice. È ragionevole pensare che l'ipotesi più semplice sia quella di grado minore. Specifichiamo che un'ipotesi rappresenta adeguatamente un modello quando è consistente con l'insieme di esempi forniti, cioè quando si accorda con tutti i dati osservati\footnote{AIMA - Paragrafo 18.2}. Quindi nella scelta del modello occorre cercare un buon compromesso tra consistenza e bassa complessità dell'ipotesi.
+
+\subsection{Modelli discriminativi e generativi}
+Un'ulteriore classificazione dei modelli è tra \emph{discriminativi} e \emph{generativi}.
+
+\subsubsection{Discriminativi}
+
+Si tratta di modelli che, in seguito all'addestramento su un \emph{training set}, quando ricevono in ingresso un vettore $\mathbf{x}$, sono in grado di valutare quale tra le possibili uscite è quella più probabile (ad esempio qual è la classe di appartenenza più probabile del campione ricevuto). Hanno lo scopo di stimare la probabilità condizionata $p(y|\mathbf{x})$, cioè la probabilità che, dato l'ingresso $\mathbf{x}$, esso generi l'uscita $y$ (dove $y$ potrebbe rappresentare la possibile classe del campione).
+
+\subsubsection{Generativi}
+Contrariamente ai precedenti, stimano la probabilità congiunta $p(\mathbf{x},y)$. A partire da ciascun possibile \emph{output} viene generato un modello probabilistico degli \emph{input} ad esso associato. Ciò consente di generare, dato un possibile \emph{output}, un \emph{input} che con buona probabilità potrà essere associato ad esso.
