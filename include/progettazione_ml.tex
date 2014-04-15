@@ -15,13 +15,13 @@ Analizziamo di seguito le singole fasi.
 \subsubsection{Pulizia dei dati}
 I dati ricevuti e provenienti dal mondo reale potrebbero essere sporchi, ovvero:
 \begin{itemize}
-\item potrebbero essere incompleti, ad esempio alcuni valori di un attributo sono mancanti;
+\item potrebbero essere incompleti, ad esempio quando alcuni valori di un attributo sono mancanti;
 \item potrebbero essere inaccurati o discostarsi molto da quanto ci si aspetterebbe (ad esempio a causa di una digitazione errata da parte di un operatore umano).
 \end{itemize}
 Poiché vale la regola GIGO (Garbage In - Garbage Out) secondo cui un modello addestrato con dati sporchi produrrà risultati non affidabili, è necessario individuare tutte queste anomalie e ripulire i dati. Per quanto questa operazione non segua sempre un flusso standard, ma dipende dai particolari dati e dalle proprietà che possiamo osservare, si possono distinguere alcune operazioni comuni:
 \begin{itemize}
 \item rimozione degli \emph{outlier}: per \emph{outlier} si intendono gli esempi il cui valore d'uscita supera il terzo quartile (\autoref{sec:quantili});
-\item rimozione dei duplicati: un campione d'addestramento duplicato non aggiunge alcune informazione utile;
+\item rimozione dei duplicati: un campione d'addestramento duplicato non aggiunge alcuna informazione utile;
 \item rimozione del rumore: cioè delle informazioni inutili (ad esempio l'ID utente è tipicamente un valore non significativo ai fini della classificazione).
 \end{itemize}
 
@@ -76,7 +76,7 @@ Ridurre le dimensioni dei vettori delle \emph{feature} consente di semplificare 
 Le tecniche adottate per individuare gli attributi superflui sono:
 \begin{enumerate}
 \item Filtri: grazie ai quali è possibile stabilire un \emph{ranking} degli attributi in cui gli ultimi sono quelli che discriminano meno la classe di appartenenza dell'esempio (misure tipiche: \emph{information gain}, \emph{entropy}, \emph{mutual information});
-\item \emph{Wrappers:} si suddivide il \emph{set} di dati di addestramento in due parti. La prima parte viene utilizzata per addestrare il modello, selezionando però solo un sottoinsieme di attributi per volta. Per ciasucno di questi sottoinsiemi si valutano le prestazioni sulla seconda parte (\emph{validation set}) per capire quali attributi hanno influenza maggiore;
+\item \emph{Wrappers:} si suddivide il \emph{set} di dati di addestramento in due parti. La prima parte viene utilizzata per addestrare il modello, selezionando però solo un sottoinsieme di attributi per volta. Per ciascuno di questi sottoinsiemi si valutano le prestazioni sulla seconda parte (\emph{validation set}) per capire quali attributi hanno influenza maggiore;
 \item Algoritmi di riduzione della dimensionalità (PCA, trattata in seguito).
 \end{enumerate}
 
@@ -84,7 +84,7 @@ Le tecniche adottate per individuare gli attributi superflui sono:
 \subsubsection{Overfitting ed underfitting}
 Nella scelta del modello è importante evitare due situazioni:
 \begin{itemize}
-\item \emph{overfitting}: si verifica quando il modello si comporta molto bene sul \emph{training set} ma non è in grado di prevedere correttamente le classi dei campioni nel \emph{validation set}. Significa che il modello non è in grado di generalizzare ed è quindi troppo complesso (grado troppo elevato). Un modello troppo complesso oscillerà molto e sarà caratterizzato da una forte varianza.
+\item \emph{overfitting}: si verifica quando il modello si comporta molto bene sul \emph{training set}, ma non è in grado di prevedere correttamente le classi dei campioni nel \emph{validation set}. Significa che il modello non è in grado di generalizzare ed è quindi troppo complesso (ad esempio un polinomio di grado troppo elevato). Un modello troppo complesso oscillerà molto e sarà caratterizzato da una forte varianza.
 \item \emph{underfitting}: il modello è troppo semplice e genera errori troppo grandi sia sui dati di addestramento che su quelli di validazione. Ciò si traduce in un errore medio di predizione elevato (\emph{bias});
 \end{itemize}
 
@@ -92,9 +92,9 @@ Nella scelta del modello è importante evitare due situazioni:
 Cerchiamo di capire qual è l'influenza di \emph{bias} e varianza sull'errore mediamente commesso da un modello\footnote{Questa parte è stata scritta partendo dagli appunti ed integrandoli con il libro e con quanto letto \href{http://www-scf.usc.edu/~csci567/17-18-bias-variance.pdf}{qui}.}.
 
 \paragraph{Formulazione del problema}
-Ipotizziamo di avere a disposizione infiniti \emph{dataset} $D_i$ la cui unione costuituisce l'intera popolazione di campioni che il nostro modello potrà mai incontrare nella sua esistenza.
+Ipotizziamo di avere a disposizione infiniti \emph{dataset} $D_i$ la cui unione costutuisce l'intera popolazione di campioni che il nostro modello potrà mai incontrare nella sua esistenza.
 
-Ipotizziamo di fissare il tipo di modello da usare (ad esempio il grado del polinomio di una regressione lineare) e di addestrarlo ogni volta con un diverso $D_i$, otterremo quindi infinite ipotesi $h^{(D_i)}(x)$.
+Ipotizziamo di fissare il tipo di modello da usare e di addestrarlo ogni volta con un diverso $D_i$, otterremo quindi infinite ipotesi $h^{(D_i)}(x)$.
 
 Ciascun campione del \emph{dataset} è nella forma $<\mathbf{x^{(i)}}, y^{(i)}>$ dove $y^{(i)}$ è somma di un valore vero (a noi sconosciuto) e di un errore gaussiano a media nulla e varianza $\sigma_e$:
 \begin{equation*}
@@ -116,7 +116,7 @@ GER = E_D[MSE] = E_D\left[E_x\left[\left(h^{(D_i)}(x)-f(x)\right)^2\right]\right
 L'ultimo passaggio è possibile perché l'operatore $E$ è lineare (si tratta di una sommatoria nel caso discreto). Essendo tutti gli addendi di $E_x$ non negativi, per ottenere un \emph{GER} piccolo non ci resta che minimizzare $E_D$. La presenza degli apici  $(i)$ nella formula più interna, ci ricorda che l'aspettazione $E_D$ che desideriamo conoscere è calcolata fissato un singolo campione $x^{(i)}$ e facendo variare il modello usato.
 
 \paragraph{Decomposizione}
-Studiamo ora come è fatto il termine\footnote{La decomposizione del MSE in \emph{bias} e varianza è valida in generale. Qui riportiamo la dimostrazione usando la notazione del contesto in analisi.}:
+Studiamo ora come è fatto il seguente termine\footnote{La decomposizione del MSE in \emph{bias} e varianza è valida in generale. Qui riporto la dimostrazione usando la notazione del contesto in analisi.}:
 
 \begin{equation}\label{eq-aspettazione}
 E_D\left[\left(h^{(D)}(x^{(i)})-f(x^{(i)})\right)^2\right].
@@ -160,8 +160,8 @@ MSE(h^{(D)}(x^{(i)}))
 \paragraph{Commento dei risultati}
 L'errore di generalizzazione di un modello è l'aspettazione del MSE appena definito, abbiamo quindi interesse a rendere l'MSE piccolo. Ciò può essere ottenuto riducendo il \emph{bias} o la varianza:
 \begin{itemize}
-\item il \emph{bias} tiene conto di quanto la migliore stima (cioè la media delle stime) sia in grado di avvicinarsi al valore vero. Un \emph{bias} alto è indice di un modello troppo semplice che, a prescindere dal \emph{dataset} $D_i$ di addestramento, non ha una buona capacità predittiva. Questo è riconducibile ad un polinomio di grado troppo basso;
-\item la varianza tiene conto di quanto ciascuna ipotesi si discosta dal valor medio calcolato su tutte le ipotesi. Una varianza alta è indice del fatto che, addestrando uno stesso modello con $D_i$ diversi, si possono ottenere ipotesi molto diverse. Ciò significa che il modello è troppo complesso, tende ad andare in \emph{overfitting} e manca di capacità di generalizzazione.
+\item il \emph{bias} tiene conto di quanto la migliore stima (cioè la media delle stime) sia in grado di avvicinarsi al valore vero. Un \emph{bias} alto è indice di un modello troppo semplice che, a prescindere dal \emph{dataset} $D_i$ di addestramento, non ha una buona capacità predittiva. Questo è riconducibile, ad esempio, un polinomio di grado troppo basso;
+\item la varianza tiene conto di quanto ciascuna ipotesi si discosta dal risultato dell'ipotesi media. Una varianza alta è indice del fatto che, addestrando uno stesso modello con $D_i$ diversi, si possono ottenere ipotesi molto diverse. Ciò significa che il modello è troppo complesso, tende ad andare in \emph{overfitting} e manca di capacità di generalizzazione.
 \end{itemize}
 
 
@@ -199,7 +199,7 @@ La \emph{holdout cross validation} prevede che il \emph{training set } su cui ad
 
 
 \subsubsection{K-folds cross validation}
-Questa tecnica prevede che l'insieme dei dati venga suddiviso in $k$ sottoinsiemi (tipicamente $k=10$). Durante ciascuna delle $k$ iterazioni dell'algoritmo, ciascun modello viene addestrato sull'unione di $k-1$ sottoinsiemi, e validato sul $k-esimo$. Ad ogni iterazione si cambiano i $k-1$ sottoinsiemi di addestramento e di conseguenza il $k-esimo$. L'errore commesso da ciascun modello viene calcolato come media degli errori da esso commessi in seguito a ciascuno dei $k$ addestramenti.
+Questa tecnica prevede che l'insieme dei dati venga suddiviso in $k$ sottoinsiemi di uguali dimensioni (tipicamente $k=10$). Durante ciascuna delle $k$ iterazioni dell'algoritmo ciascun modello viene addestrato sull'unione di $k-1$ sottoinsiemi e validato sul $k-esimo$. Ad ogni iterazione si cambiano i $k-1$ sottoinsiemi di addestramento e di conseguenza il $k-esimo$. L'errore commesso da ciascun modello viene calcolato come media degli errori da esso commessi in seguito a ciascuno dei $k$ addestramenti.
 
 \subsection{Valutazione del modello}
 La valutazione finale del modello viene fatta dopo averlo scelto, e quindi dopo averlo riaddestrato usando l'unione di \emph{training set} e \emph{validation set}. È evidente, quindi, che il \emph{test set} su cui valutiamo le prestazioni del modello debba essere distinto dagli altri due.
@@ -208,11 +208,7 @@ Occorre, inoltre, evitare il \emph{peeking}, cioè non usare i dati del \emph{te
 
 
 \subsubsection{Matrice di confusione e metriche}
-La matrice di confusione consente di rappresentare in maniera compatta alcune grandezze di interesse per il calcolo delle misure di prestazione di un classificatore binario. Supponendo che l'uscita del classificatore sia \emph{yes} ($y=1$) o \emph{no} ($y=0$), la matrice di confusione viene costruita indicando sulle righe la classe reale dei campioni del \emph{test set}, sulle colonne la classe predetta dal classificatore per tali campioni (\autoref{fig:confusione}).
-
-
-
-All'interno della matrice indichiamo 4 quantità:
+La matrice di confusione consente di rappresentare in maniera compatta alcune grandezze di interesse per il calcolo delle misure di prestazione di un classificatore binario. Supponendo che l'uscita del classificatore sia \emph{yes} ($y=1$) o \emph{no} ($y=0$), la matrice di confusione viene costruita indicando sulle righe la classe reale dei campioni del \emph{test set}, sulle colonne la classe predetta dal classificatore per tali campioni (\autoref{fig:confusione}). All'interno della matrice identifichiamo 4 quantità:
 \begin{itemize}
 \item TP (\emph{true positive}), rappresenta il numero di veri positivi, cioè il numero di campioni classificati come positivi (classe 1) e che effettivamente sono positivi;
 \item TN (\emph{true negative}), rappresenta il numero di veri negativi, cioè il numero di campioni classificati come negativi (classe 0) e che effettivamente sono negativi;

@@ -493,7 +493,7 @@ dove $e^{(i)}$ rappresenta il contributo all'errore apportato da un \emph{i-esim
 \item campione classificato come classe 1  ($y^{(i)}=1$);
 \item campione classificato come classe 0 ($y^{(i)}=0$).
 \end{itemize}
-Nel primo caso, il singolo addendo assume l'espressione:
+Nel primo caso il singolo addendo assume l'espressione:
 
  \begin{equation*}
  e^{(i)}=-\log{h_\theta(\mathbf{x^{(i)}})} 
@@ -543,7 +543,7 @@ g'(z) = \frac{\partial}{\partial z}\left( \frac{1}{1+e^{-z}}\right)=g(z)(1-g(z))
 \end{equation*}
 Sfruttando la precedente nel calcolo delle derivate di $J(\theta)$ si vede che la regola di aggiornamento dei pesi è identica a quella della regressione lineare, cioè:
 \begin{equation*}
-   \theta_k^{NEW} = \theta_k^{OLD} - \alpha \frac{1}{m} \sum_{i=1}^m (h(x^{(i)})-y^{(i)}) x^{(i)}_k.\end{equation*}
+   \theta_k^{NEW} = \theta_k^{OLD} - \alpha \frac{1}{m} \sum_{i=1}^m (h(\mathbf{x^{(i)}})-y^{(i)}) x^{(i)}_k.\end{equation*}
 Essa può essere applicata sia per il \emph{batch gradient descent} che per le sue varianti stocastiche.
 
 \subsubsection{Derivazione della regola di aggiornamento dei pesi}\label{sec:dim_log_regr}
@@ -551,40 +551,40 @@ Vediamo ora quali sono i passaggi che portano all'espressione della regola di ag
 \begin{equation*}
 g'(z) =g(z)(1-g(z)).
 \end{equation*}
-Partendo da essa, calcoliamo la derivata parziale di $h_\theta(x)$, che tornerà utile in seguito:
+Partendo da essa, calcoliamo la derivata parziale di $h_\theta(\mathbf{x})$, che tornerà utile in seguito:
 \begin{equation*}
-\frac{\partial h_\theta(x)}{\partial \theta_k} = h_\theta(x) (1-h_\theta(x)) \frac{\partial (\theta^T x)}{\partial \theta_k}
+\frac{\partial h_\theta(\mathbf{x})}{\partial \theta_k} = h_\theta(\mathbf{x}) (1-h_\theta(\mathbf{x})) \frac{\partial (\theta^T \mathbf{x})}{\partial \theta_k}
 \end{equation*}
 dove, come già visto in \autoref{sec:gradiente}, risulta che:
 \begin{equation*}
-\frac{\partial (\theta^T x)}{\partial \theta_k} = x_k
+\frac{\partial (\theta^T \mathbf{x})}{\partial \theta_k} = x_k
 \end{equation*}
 e quindi
 \begin{equation*}
-\frac{\partial h_\theta(x)}{\partial \theta_k} = h_\theta(x) (1-h_\theta(x)) x_k.
+\frac{\partial h_\theta(\mathbf{x})}{\partial \theta_k} = h_\theta(\mathbf{x}) (1-h_\theta(\mathbf{x})) x_k.
 \end{equation*}
 Passiamo ora al calcolo della derivata parziale di $J(\theta)$:
 
  \begin{equation}\label{eq:delta_j}
- \frac{\partial J(\theta)}{\partial \theta_k} = -\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}} \frac{\partial}{\partial \theta_k}(\log{h_\theta(x^{(i)})}) + (1-y^{(i)})
- \frac{\partial}{\partial \theta_k}(\log{(1 - h_\theta(x^{(i)}))}) \right).
+ \frac{\partial J(\theta)}{\partial \theta_k} = -\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}} \frac{\partial}{\partial \theta_k}(\log{h_\theta(\mathbf{x^{(i)}})}) + (1-y^{(i)})
+ \frac{\partial}{\partial \theta_k}(\log{(1 - h_\theta(\mathbf{x^{(i)}}))}) \right).
 \end{equation}
 Esaminiamo separatamente le due derivate:
 \begin{equation*}
-\frac{\partial}{\partial \theta_k}\log{h_\theta(x^{(i)})} = \frac{1}{h_\theta(x^{(i)})} h_\theta(x^{(i)}) (1-h_\theta(x^{(i)})) x_k^{(i)} =  (1-h_\theta(x^{(i)})) x_k^{(i)}
+\frac{\partial}{\partial \theta_k}\log{h_\theta(\mathbf{x^{(i)}})} = \frac{1}{h_\theta(\mathbf{x^{(i)}})} h_\theta(\mathbf{x^{(i)}}) (1-h_\theta(\mathbf{x^{(i)}})) x_k^{(i)} =  (1-h_\theta(\mathbf{x^{(i)}})) x_k^{(i)}
 \end{equation*}
 
 \begin{equation*}
-\frac{\partial}{\partial \theta_k}\log{(1 - h_\theta(x^{(i)}))} = \frac{1}{1- h_\theta(x^{(i)})} (-h_\theta(x^{(i)})) (1-h_\theta(x^{(i)})) x_k^{(i)} =  -h_\theta(x^{(i)}) x_k^{(i)}
+\frac{\partial}{\partial \theta_k}\log{(1 - h_\theta(\mathbf{x^{(i)}}))} = \frac{1}{1- h_\theta(\mathbf{x^{(i)}})} (-h_\theta(\mathbf{x^{(i)}})) (1-h_\theta(\mathbf{x^{(i)}})) x_k^{(i)} =  -h_\theta(\mathbf{x^{(i)}}) x_k^{(i)}
 \end{equation*}
 Sostituiamo le precedenti nell'\autoref{eq:delta_j}, raccogliamo $x_k$ e sviluppiamo il prodotto per ottenere la derivata finale:
 
  \begin{dmath*}
- \frac{\partial J(\theta)}{\partial \theta_k} = -\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}} (1-h_\theta(x^{(i)})) x_k^{(i)} + (1-y^{(i)})
- (-h_\theta(x^{(i)})) x_k^{(i)} \right) 
- =-\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}} (1-h_\theta(x^{(i)})) + (1-y^{(i)})
- (-h_\theta(x^{(i)})) \right) x_k^{(i)}  
- = \frac{1}{m}\sum_{i=1}^m \left( h_\theta(x^{(i)}) - y^{(i)} \right) x_k^{(i)}  
+ \frac{\partial J(\theta)}{\partial \theta_k} = -\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}} (1-h_\theta(\mathbf{x^{(i)}})) x_k^{(i)} + (1-y^{(i)})
+ (-h_\theta(\mathbf{x^{(i)}})) x_k^{(i)} \right) 
+ =-\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}} (1-h_\theta(\mathbf{x^{(i)}})) + (1-y^{(i)})
+ (-h_\theta(\mathbf{x^{(i)}})) \right) x_k^{(i)}  
+ = \frac{1}{m}\sum_{i=1}^m \left( h_\theta(\mathbf{x^{(i)}}) - y^{(i)} \right) x_k^{(i)}  
 \end{dmath*}
 
 \subsection{Regressione logistica: caso multiclasse}
@@ -593,7 +593,7 @@ Con la regressione logistica siamo in grado di realizzare un classificatore bina
 \item usare una funzione logistica a più livelli (che non approfondiremo);
 \item usare più funzioni logistiche in un approccio \emph{one-vs-all}, che ci apprestiamo ad approfondire.
 \end{enumerate}
-Supponiamo di dover distinguere $n$ classi, per farlo addestreremo $n$ classificatori (quindi avremo $n$ funzioni logistiche) ciascuno dei quali sarà in grado di identificare come classe 1 una classe desiderata, e tutte le altre $n-1$ saranno riconosciute come classe 0. Una volta addestrati gli $n$ classificatori, per classificare un nuovo ingresso lo diamo in \emph{input} a tutte le funzioni logistiche, ciascuna restituirà un valore tra 0 ed 1, quello più alto determinerà la classe di appartenenza dell'ingresso (cioè ci dirà quale classificatore ha dato la risposta più alta, presumibilmente quello specializzato sulla reale classe di appartenenza dell'ingresso). Di fatto in questo approccio interpretiamo l'uscita dell'\emph{i-esimo} classificatore come la probabilità che l'ingresso appartenga alla classe \emph{i-esima}.
+Supponiamo di dover distinguere $k$ classi. Per fare ciò addestreremo $k$ classificatori (quindi avremo $k$ funzioni logistiche) ciascuno dei quali sarà in grado di identificare come classe 1 una classe desiderata, e tutte le altre $k-1$ saranno riconosciute come classe 0. Una volta addestrati i $k$ classificatori, per classificare un nuovo ingresso lo diamo in \emph{input} a tutte le funzioni logistiche, ciascuna restituirà un valore tra 0 ed 1, quello più alto determinerà la classe di appartenenza dell'ingresso (cioè ci dirà quale classificatore ha dato la risposta più alta, presumibilmente quello specializzato sulla reale classe di appartenenza dell'ingresso). Di fatto in questo approccio interpretiamo l'uscita dell'\emph{i-esimo} classificatore come la probabilità che l'ingresso appartenga alla classe \emph{i-esima}.
 
 \subsection{Regolarizzazione}
 Uno dei problemi in cui è possibile incorrere è l'\emph{overfitting} e tramite la ``regolarizzazione'' possiamo evitarlo. 
@@ -607,7 +607,7 @@ Il concetto di base è molto semplice: sommiamo alla funzione costo un qualcosa 
 
 Nel caso della regressione lineare, la funzione costo regolarizzata prende il nome di \emph{Ridge Regression} ed è la seguente:
 \begin{equation}\label{eqJ_theta}
-  J(\theta) = \frac{1}{2m} \left(\sum_{i=1}^m (h(x^{(i)})-y^{(i)})^2 + \lambda \sum_{j=1}^n\theta_j^2\right)
+  J(\theta) = \frac{1}{2m} \left(\sum_{i=1}^m (h(\mathbf{x^{(i)}})-y^{(i)})^2 + \lambda \sum_{j=1}^n\theta_j^2\right)
 \end{equation}
 dove:
 \begin{itemize}
@@ -616,18 +616,18 @@ dove:
 \end{itemize}
 Nel caso della regressione logistica, questo approccio porta a riformulare la funzione costo come segue:
  \begin{equation*}
- J(\theta) = -\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}}\log{h_\theta(x^{(i)})} + (1-y^{(i)})
- \log{(1 - h_\theta(x^{(i)}))} \right) + \frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2.
+ J(\theta) = -\frac{1}{m}\sum_{i=1}^m \left( {y^{(i)}}\log{h_\theta(\mathbf{x^{(i)}})} + (1-y^{(i)})
+ \log{(1 - h_\theta(\mathbf{x^{(i)}}))} \right) + \frac{\lambda}{2m}\sum_{j=1}^n\theta_j^2.
 \end{equation*}
 In maniera simile a quanto già fatto, possiamo calcolare le derivate delle funzioni costo regolarizzate e dedurre la regola di aggiornamento dei pesi. Si vede facilmente che, sia nel caso di regressione lineare che logistica, essa diventa:
 \begin{gather*}\begin{cases}
-\displaystyle\theta^{NEW}_0 = \theta^{OLD}_0 - \alpha \frac{1}{m} \sum_{i=1}^m \left(h_\theta(x^{(i)}) - y^{(i)}\right)x_0^{(i)} \\
-\displaystyle\theta^{NEW}_k = \theta^{OLD}_k - \alpha \left[ \frac{1}{m} \sum_{i=1}^m \left(h_\theta(x^{(i)}) - y^{(i)}\right)x_k^{(i)}+\frac{\lambda}{m}\theta_k\right] \quad k=1,2,\dots,n
+\displaystyle\theta^{NEW}_0 = \theta^{OLD}_0 - \alpha \frac{1}{m} \sum_{i=1}^m \left(h_\theta(\mathbf{x^{(i)}}) - y^{(i)}\right)x_0^{(i)} \\
+\displaystyle\theta^{NEW}_k = \theta^{OLD}_k - \alpha \left[ \frac{1}{m} \sum_{i=1}^m \left(h_\theta(\mathbf{x^{(i)}}) - y^{(i)}\right)x_k^{(i)}+\frac{\lambda}{m}\theta_k\right] \quad k=1,2,\dots,n
 \end{cases}
 \end{gather*}
 La regola di aggiornamento di $\theta_0$ rimane invariata, come ci aspetteremmo sapendo che esso non è coinvolto nella regolarizzazione. Per tutti gli altri coefficienti possiamo riscrivere la regola come segue:
 \begin{equation*}
-\displaystyle\theta^{NEW}_k = \theta^{OLD}_k \left(1- \alpha\frac{\lambda}{m}\right) - \alpha \frac{1}{m} \sum_{i=1}^m \left(h_\theta(x^{(i)}) - y^{(i)}\right)x_k^{(i)} \quad k=1,2,\dots,n
+\displaystyle\theta^{NEW}_k = \theta^{OLD}_k \left(1- \alpha\frac{\lambda}{m}\right) - \alpha \frac{1}{m} \sum_{i=1}^m \left(h_\theta(\mathbf{x^{(i)}}) - y^{(i)}\right)x_k^{(i)} \quad k=1,2,\dots,n
 \end{equation*}
 Notiamo che la seconda parte della regola è identica alla versione senza regolarizzazione. In condizioni ``tipiche'' accade che $\alpha<1$, $\lambda > 0$ ed $m$ è piuttosto grande. Questo fa sì che il termine $\left(1- \alpha\frac{\lambda}{m}\right)$ sia minore di $1$. Ciò ci fornisce un'interessante interpretazione della nuova regola di aggiornamento. Infatti è come se l'algoritmo aggiornasse $\theta_k$ applicando la classica regola (senza regolarizzazione) a partire da una versione scalata del precedente valore di $\theta_k$ (poiché viene moltiplicato per una quantità minore di $1$).
 
@@ -678,7 +678,7 @@ Per capire i risultati ottenuti dalla gente seria, riconduciamoci al caso $n=2$,
 \end{gather}
 Sappiamo che:
 \begin{itemize}
-\item $\sum(\dots)^2$ rappresenta un paraboloide (tratteggiato in \autoref{fig:norme});
+\item $\sum(\dots)^2$ rappresenta un paraboloide (il cui \emph{contour plot} è tratteggiato in \autoref{fig:norme});
 \item $\theta_1^2 + \theta_2^2 < t$ delimita l'area interna ad una circonferenza centrata nell'origine e di raggio $\sqrt{t}$ (vedi \autoref{fig:norme});
 \item $|\theta_1|+|\theta_2| < t$ delimita l'area interna di un rombo di diagonale $2t$ (vedi \autoref{fig:norme}).
 \end{itemize}
