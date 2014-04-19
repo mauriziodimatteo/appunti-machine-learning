@@ -436,7 +436,7 @@ y=\begin{cases} 1  \qquad \mbox{se }  h_\theta(\mathbf{x})\geq threshold \\
 \end{cases}
 \end{equation*}
 
-\subsubsection{Funzione costo}
+\subsubsection{Funzione costo}\label{sec:funzione_costo_logistica}
 Similmente a quanto fatto per la regressione lineare, individuiamo un'espressione della funzione costo che tenga conto della differenza tra le uscite reali e quelle predette tramite il modello. 
 Per trovare tale espressione calcoliamo direttamente la funzione \emph{likelihood} ed applichiamo l'ipotesi di massima verosimiglianza (cioè massimiziamo la funzione di verosimiglianza).
 
@@ -490,8 +490,8 @@ La funzione costo appena definita non può essere studiata da un punto di vista 
 dove $e^{(i)}$ rappresenta il contributo all'errore apportato da un \emph{i-esimo} campione di addestramento.
  Distinguamo due casi:
 \begin{itemize}
-\item campione classificato come classe 1  ($y^{(i)}=1$);
-\item campione classificato come classe 0 ($y^{(i)}=0$).
+\item il campione appartiene alla classe 1  ($y^{(i)}=1$);
+\item il campione appartiene alla classe 0 ($y^{(i)}=0$).
 \end{itemize}
 Nel primo caso il singolo addendo assume l'espressione:
 
@@ -500,11 +500,11 @@ Nel primo caso il singolo addendo assume l'espressione:
  \end{equation*}
  In \autoref{fig:errori_logistica} (linea rossa) è mostrato il suo andamento, concludiamo che:
 \begin{itemize}
-\item se il classificatore restituisce un valore basso, l'errore commesso classificandolo come 1 ($y^{(i)}=1$) sarà alto. Al limite accade che:
+\item se il campione è di classe 1, ma il classificatore restituisce un valore basso, l'errore commesso è alto. Al limite accade che:
 \begin{equation*}
 h_\theta(\mathbf{x^{(i)}}) = 0 \Rightarrow e^{(i)} \rightarrow \infty
 \end{equation*}
-\item se il classificatore restituisce un valore alto, l'errore commesso classificandolo come 1 ($y^{(i)}=1$) sarà basso:
+\item se il campione è di classe 1 ed il classificatore restituisce un valore alto, l'errore commesso è basso. Al limite accade che:
 \begin{equation*}
 h_\theta(\mathbf{x^{(i)}}) = 1 \Rightarrow e^{(i)} \rightarrow 0
 \end{equation*}
@@ -515,11 +515,11 @@ Nel secondo caso ($y^{(i)}=0$), il contributo del singolo campione sarà:
  \end{equation*}
 In \autoref{fig:errori_logistica} (linea blu) è mostrato il suo andamento, concludiamo che:
 \begin{itemize}
-\item se il classificatore restituisce un valore basso, l'errore commesso classificandolo come 0 ($y^{(i)}=0$) sarà basso. Al limite accade che:
+\item se il campione è di classe 0 ed il classificatore restituisce un valore basso, l'errore commesso è basso. Al limite accade che:
 \begin{equation*}
 h_\theta(\mathbf{x^{(i)}}) = 0 \Rightarrow e^{(i)} \rightarrow 0
 \end{equation*}
-\item se il classificatore restituisce un valore alto, l'errore commesso classificandolo come 0 ($y^{(i)}=0$) sarà alto:
+\item se il campione è di classe 0, ma il classificatore restituisce un valore alto, l'errore commesso è alto. Al limite accade che:
 \begin{equation*}
 h_\theta(\mathbf{x^{(i)}}) = 1 \Rightarrow e^{(i)} \rightarrow \infty
 \end{equation*}
