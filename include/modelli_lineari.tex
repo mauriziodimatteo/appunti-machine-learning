@@ -493,6 +493,14 @@ dove $e^{(i)}$ rappresenta il contributo all'errore apportato da un \emph{i-esim
 \item il campione appartiene alla classe 1  ($y^{(i)}=1$);
 \item il campione appartiene alla classe 0 ($y^{(i)}=0$).
 \end{itemize}
+
+\begin{figure}[]
+\centering
+  \includegraphics[width=0.5\columnwidth]{images/errori_logistica}
+  \caption{Contributi all'errore nella regressione logistica}
+  \label{fig:errori_logistica}
+\end{figure}
+
 Nel primo caso il singolo addendo assume l'espressione:
 
  \begin{equation*}
@@ -525,12 +533,7 @@ h_\theta(\mathbf{x^{(i)}}) = 1 \Rightarrow e^{(i)} \rightarrow \infty
 \end{equation*}
 \end{itemize}
 
-\begin{figure}[]
-\centering
-  \includegraphics[width=0.5\columnwidth]{images/errori_logistica}
-  \caption{Contributi all'errore nella regressione logistica}
-  \label{fig:errori_logistica}
-\end{figure}
+
 
 \subsection{Metodo della discesa del gradiente}
 Poiché non esiste un metodo analitico per minimizzare la funzione costo, l'unica l'alternativa è un metodo numerico, come quello basato sulla discesa del gradiente. Come già visto, questo metodo si basa sulla seguente regola di aggiornamento dei pesi:

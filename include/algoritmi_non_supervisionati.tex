@@ -14,21 +14,34 @@ Gli algoritmi di \emph{clustering} si distinguono in \emph{hard} e \emph{soft cl
 \item si parla di \emph{soft clustering} quando l'algoritmo indica, per ciascuna istanza, qual è la probabilità che appartenga a ciascun \emph{cluster}.
 \end{itemize}
 
-\subsubsection{K-means}
+\subsubsection{K-means}\label{sec:k-means}
 Si tratta di un semplice algoritmo di \emph{hard clustering} che si articola nelle seguenti fasi:
 \begin{enumerate}
-\item fissa il numero di \emph{cluster} $k$ in maniera casuale o basandoti su un euristica nota;
-\item scegli casualmente $k$ punti tra le istanze note ed assumi che siano i centroidi dei $k$ \emph{cluster};
+\item fissa il numero di \emph{cluster} $K$ in maniera casuale o basandoti su un euristica nota;
+\item scegli casualmente $K$  punti tra le istanze note ed assumi che siano i centroidi dei $K$  \emph{cluster};
 \item\label{step:assegna_cluster} assegna ogni rimanente punto al \emph{cluster} il cui centroide è più vicino (per valutare la distanza si può usare una distanza Euclidea, di Manhattan o altro ancora);
 \item in base ai campioni aggiunti in ciascun \emph{cluster} ricalcola la posizione dei centroidi\footnote{Ciascuna coordinata del centroide di un \emph{cluster} è calcolata come la media del valore che tale coordinata assume per tutti i punti del \emph{cluster}.};
 \item torna al~\autoref{step:assegna_cluster} fino al raggiungimento della condizione di convergenza.
 \end{enumerate}
-La condizione di convergenza può essere un numero massimo di iterazioni oppure il momento in cui ciascun centroide dista dal suo valore precedente di una quantità minore ad una soglia desiderata. Al termine dell'algoritmo avremo minimizzato la distanza quadratica delle istanze dai rispettivi centroidi.
+La condizione di convergenza può essere un numero massimo di iterazioni oppure il momento in cui ciascun centroide dista dal suo valore precedente di una quantità minore ad una soglia desiderata. Al termine dell'algoritmo avremo minimizzato la distanza quadratica media delle istanze dai rispettivi centroidi, detta anche \emph{dispersione}:
+\begin{equation*}
+J(c^{(1)}, \dots,c^{(m)},\mu_1, \dots,\mu_K) = \frac{1}{m} \sum_{i=1}^m || x^{(i)} - \mu_{c^{(i)}} ||^2
+\end{equation*}
+in cui:
+\begin{itemize}
+\item $m$ è il numero complessivo di istanze;
+\item $ x^{(i)}$ è la \emph{i-esima} istanza;
+\item $c^{(i)}$ è il \emph{cluster} a cui appartiene il punto $x^{(i)}$;
+\item $\mu_{c^{(i)}}$ sono le coordinate del centroide del \emph{cluster} a cui appartiene $ x^{(i)}$;
+\item $|| x^{(i)} - \mu_{c^{(i)}} ||^2$ è la distanza quadratica tra ciascuna istanza ed il suo centroide.
+\end{itemize}
+Si dimostra matematicamente che il primo primo passo dell'algoritmo, quello in cui assegnamo ciascun punto ad un cluster, minimizza la funzione costo variando $c^{(i)}$, mentre il secondo passo, in cui aggiorniamo i centroidi, la minimizza variando i $\mu_k$.
+
 
 Un vantaggio di questo algoritmo è costituito dalla sua semplicità, ma presenta alcuni svantaggi, tra cui:
 \begin{itemize}
 \item\emph{ Non è adatto per dati di tipo categoriale}. Per funzionare, infatti, è necessario poter stabilire una distanza tra due generiche istanze. Affinché ciò sia possibile i vettori delle \emph{feature} devono essere numerici, o quantomeno dobbiamo essere in grado di applicare una metrica di distanza tra coppie di istanze.
-\item\emph{Necessita di specificare $k$ in anticipo}. In questa categoria di problemi non abbiamo informazioni a priori su quali e quante classi cercare, quindi diventa difficile indovinare il $k$ esatto fin da subito. Una possibilità è avviare più volte l'algoritmo con $k$ diversi e confrontare i risultati. Vedremo a breve come si può realizzare ciò.
+\item\emph{Necessita di specificare $K$ in anticipo}. In questa categoria di problemi non abbiamo informazioni a priori su quali e quante classi cercare, quindi diventa difficile indovinare il $K$ esatto fin da subito. Una possibilità è avviare più volte l'algoritmo con $K$ diversi e confrontare i risultati. Vedremo a breve come si può realizzare ciò.
 \item\emph{Può restare bloccato in minimi locali}. Ad esempio può accadere quanto mostrato in \autoref{fig:k-means-minimo-locale}, nella quale in quello che dovrebbe essere un unico \emph{cluster} è possibile individuare sottogruppi di istanze molto simili che agli occhi dell'algoritmo appaiono come \emph{cluster} distinti. La \emph{clusterizzazione} che ne consegue è palesemente errata.
 \item\emph{Molto sensibile a rumore ed outlier}. Se, casualmente, un \emph{outlier} fosse scelto come centroide iniziale, questo potrebbe influire negativamente sul resto dell'algoritmo. Per ovviare a ciò si può rilanciare \emph{k-means} più volte e vedere a che risultati porta.
 \item\emph{Non adatto a cluster con forme non convesse}.
@@ -42,18 +55,7 @@ Un vantaggio di questo algoritmo è costituito dalla sua semplicità, ma present
   \label{fig:k-means-minimo-locale}
 \end{figure}
 
-Abbiamo visto che uno dei punti delicati del \emph{k-means} è la scelta di $k$. Per capire quale sia il valore ottimo è possibile variare $k$ e \emph{plottare} i risultati. In particolare studieremo come varia  la \emph{Misura di Distorsione dei Cluster} in funzione di $k$, dove essa è definita come segue\footnote{A volte si usa la  \emph{Within Groups Sum of Squares} che è identica a $J(k)$ ma non normalizzata rispetto al numero di punti.}:
-\begin{equation*}
-J(k) = \frac{1}{N} \sum_{i=1}^N || x^{(i)} - \mu_c^{(i)} ||^2
-\end{equation*}
-in cui:
-\begin{itemize}
-\item $N$ è il numero complessivo di istanze;
-\item $ x^{(i)}$ è la \emph{i-esima} istanza;
-\item $\mu_c^{(i)}$ sono le coordinate del centroide del \emph{cluster} a cui appartiene $ x^{(i)}$;
-\item $|| x^{(i)} - \mu_c^{(i)} ||^2$ è la distanza quadratica tra ciascuna istanza ed il suo centroide.
-\end{itemize}
-Ciò che ci interessa è minimizzare la somma delle distanze quadratiche, plottando $J$ in funzione di $k$. Un valore troppo alto di $J$ ci indica, ad esempio, che il \emph{clustering} non è significativo perché due o più \emph{cluster} potrebbero essere stati raggruppati attorno ad un unico centroide. Un valore troppo basso, però, è indice del fatto che abbiamo usato un numero troppo elevato di centroidi. Nel caso estremo avremo tanti centroidi quanti punti e questo porterà ad avere errore nullo. Tipicamente si può vedere che l'andamento di $J$ è decrescente (simile a quello in \autoref{fig:j(k)}) e si assume che il valore vero di $k$ coincida con il ginocchio di tale curva (cioè il punto in cui la pendenza comincia ad essere meno ripida, determinato tramite un'opportuna famiglia di algoritmi).
+Abbiamo visto che uno dei punti delicati del \emph{k-means} è la scelta di $K$. Per capire quale sia il valore ottimo è possibile variare $K$ e \emph{plottare} il valore della funzione costo in funzione di essa\footnote{A volte si usa la  \emph{Within Groups Sum of Squares} che è identica a $J(K)$ ma non normalizzata rispetto al numero di punti.}. Un valore troppo alto di $J(K)$ ci indica, ad esempio, che il \emph{clustering} non è significativo perché due o più \emph{cluster} potrebbero essere stati raggruppati attorno ad un unico centroide. Un valore troppo basso, però, è indice del fatto che abbiamo usato un numero troppo elevato di centroidi. Nel caso estremo avremo tanti centroidi quanti punti e questo porterà ad avere errore nullo. Tipicamente si può vedere che l'andamento di $J$ è decrescente (simile a quello in \autoref{fig:j(k)}) e si assume che il valore vero di $K$ coincida con il ginocchio di tale curva (cioè il punto in cui la pendenza comincia ad essere meno ripida, determinato tramite un'opportuna famiglia di algoritmi).
 
 \begin{figure}[tbp]
 \centering
@@ -257,6 +259,33 @@ Questi risultati confermano quanto ci aspettavamo e notiamo che la varianza lung
   \label{fig:components_scaled}
 \end{figure}
 \end{esempio}
+
+\subsubsection{Scelta del numero di componenti principali}\label{scelta-p}
+Fin qui non abbiamo detto niente su quante componenti prendere in considerazione, cioè su come determinare il parametro $p$. Una regola comunemente usata\footnote{{\href{https://class.coursera.org/ml-005/lecture/86}{Coursera, Machine Learning (Andrew Ng), Lezione 8.5}}} è individuare il più piccolo $p$ che garantisce la seguente disuguaglianza:
+\begin{equation*}
+\displaystyle\frac{\displaystyle\frac{1}{m} \sum_{i=1}^m || x^{(i)} - \hat{x}^{(i)}||^2}{\displaystyle\frac{1}{m} \sum_{i=1}^m || x^{(i)}||^2} \leq 1-\epsilon
+\end{equation*}
+dove $\hat{x}^{(i)}$ rappresenta la proiezione del punto $x^{(i)}$ sull'iperpiano individuato dalle prime $p$ componenti (nota che le coordinate di $\hat{x}^{(i)}$ sono ancora espresse rispetto al sistema di riferimento originale, altrimenti questa distanza non avrebbe senso). Il numeratore della precedente equazione rappresenta quindi la distanza quadratica media tra ciascun punto e la sua proiezione sull'iperpiano in $p$ dimensioni, mentre il denominatore rappresenta la lunghezza media dei vettori che uniscono l'origine a ciascun punto. Valori tipici per $\epsilon$ sono compresi tra $0.95$ e $0.99$, ma si può arrivare anche a $0.85$ in casi particolari. Se ad esempio troviamo un valore di $p$ per $\epsilon = 0.99$ possiamo affermare che dopo la PCA abbiamo \emph{mantenuto il 99\% della varianza}.
+Il valore di $p$ può essere quindi determinato iterativamente, partendo da $p=1$ ed eventualmente incrementandolo fintanto che la diseguaglianza vista in precedenza non risulti vera. Questa formulazione del problema, però, richiede il calcolo delle proiezioni di tutti gli $m$ campioni per ogni valore di $p$ che stiamo testando. Matematicamente si dimostra che:
+\begin{equation*}
+\displaystyle\frac{\displaystyle\frac{1}{m} \sum_{i=1}^m || x^{(i)} - \hat{x}^{(i)}||^2}{\displaystyle\frac{1}{m} \sum_{i=1}^m || x^{(i)}||^2} = 1 - \displaystyle\frac{\displaystyle\sum_{i=1}^p \lambda_i}{\displaystyle\sum_{i=1}^n \lambda_i}
+\end{equation*}
+dove $\lambda_i$ rappresenta l'\emph{i-esimo} autovalore della matrice delle covarianze. La disuguaglianza precedente diventa quindi:
+\begin{equation*}
+\displaystyle\frac{\displaystyle\sum_{i=1}^p \lambda_i}{\displaystyle\sum_{i=1}^n \lambda_i} \geq \epsilon
+\end{equation*}
+Questo risultato ci consente di determinare $p$ senza calcolare le proiezioni dei punti, infatti gli autovalori sono tutti presenti sulla diagonale principale della matrice $S$ ed il numeratore della precedente è la somma dei primi $p$ autovalori, mentre il denominatore è la somma dell'intera diagonale.
+
+In definitiva la procedura di selezione di $p$ può essere sintetizzata come segue:
+\begin{enumerate}
+\item Ottieni la matrice $S$ tramite SVD ed inizializza $p = 1$;
+\item La seguente disuguaglianza è vera?
+\begin{equation*}\frac{\sum_{i=1}^p \lambda_i}{\sum_{i=1}^n \lambda_i} \geq \epsilon\end{equation*}
+\begin{itemize}
+\item Se sì, abbiamo trovato il valore desiderato di $p$;
+\item Altrimenti incrementa $p$ e torna al passo 2;
+\end{itemize}
+\end{enumerate}
 
 \clearpage
 \subsection{Soft clustering tramite GMM}
