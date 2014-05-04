@@ -241,7 +241,7 @@ m2 <-  results$u[,2][1] / results$u[,2][2]
 comp2 <- matrix(c(seq(-3,3), m2*seq(-3,3)), 7, 2)
 points(comp2, col="blue", type = "l" )
 \end{lstlisting}
-Il risultato è mostrato in \autoref{fig:components_scaled}. Effettivamente notiamo che le proiezioni dei punti sulla prima componente (quella disegnata in rosso) hanno varianza maggiore. Verifichiamo se quest'ultima affermazione è vera calcolando le varianze delle proiezioni dei punti sui due assi:
+Il risultato è mostrato in \autoref{fig:components_scaled}. Effettivamente notiamo che le proiezioni dei punti sulla prima componente (disegnata in rosso) hanno varianza maggiore. Verifichiamo se quest'ultima affermazione è vera calcolando le varianze delle proiezioni dei punti sui due assi:
 \begin{lstlisting}
 > var(scaled.dataset %*% results$u[,1])
          [,1]
@@ -250,7 +250,7 @@ Il risultato è mostrato in \autoref{fig:components_scaled}. Effettivamente noti
           [,1]
 [1,] 0.0490834
 \end{lstlisting}
-Questi risultati confermano quanto ci aspettavamo e notiamo che la varianza lungo ciascuna componente è pari proprio all'autovalore che determina tale componente (motivo per cui consideriamo gli autovalori più grandi).
+Questi risultati confermano quanto ci aspettavamo e notiamo che la varianza lungo ciascuna componente è pari proprio all'autovalore che determina tale componente (motivo per cui prendiamo in considerazione gli autovalori più grandi).
 
 \begin{figure}[tbp]
 \centering
