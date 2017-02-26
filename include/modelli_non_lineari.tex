@@ -24,7 +24,7 @@ Possiamo esplicitare l'espressione precedente come segue:
 \mathbf{w}^T \mathbf{x}^{(i)} + b < 0 \quad \rightarrow \quad y^{(i)} = -1 
 \end{gather*}
 
-A questo punto vediamo come determinare il vettore dei parametri $\mathbf{w}$ e $b$, cioè come determinare l'iperpiano separatore. Lo scopo della procedura di ottimizzazione che vogliamo costruire è massimizzare il \emph{margine}. Il margine si ottiene sommando un contributo $d^+$ ed un contributo $d^-$. $d^+$ rappresenta la minima distanza tra un punto di classe $+1$ e l'iperpiano separatore. $d^-$ èil corrispettivo per la classe $-1$, cioè la distanza minore tra un punto di classe $-1$ e l'iperpiano. I punti che danno origine a tale distanza, cioè i più vicini all'iperpiano, costituiscono i due \emph{vettori di supporto}.
+A questo punto vediamo come determinare il vettore dei parametri $\mathbf{w}$ e $b$, cioè come determinare l'iperpiano separatore. Lo scopo della procedura di ottimizzazione che vogliamo costruire è massimizzare il \emph{margine}. Il margine si ottiene sommando un contributo $d^+$ ed un contributo $d^-$. $d^+$ rappresenta la minima distanza tra un punto di classe $+1$ e l'iperpiano separatore. $d^-$ è il corrispettivo per la classe $-1$, cioè la distanza minore tra un punto di classe $-1$ e l'iperpiano. I punti che danno origine a tale distanza, cioè i più vicini all'iperpiano, costituiscono i due \emph{vettori di supporto}.
 
 Prima di formalizzare il problema di ottimizzazione, imponiamo due vincoli che ci torneranno utili in seguito: per tutti i punti appartenenti ai vettori di supporto l'ipotesi deve valere esattamente $+1$ o $-1$ (a seconda che il punto appartenga al vettore di supporto positivo o negativo):
 \begin{gather*}
